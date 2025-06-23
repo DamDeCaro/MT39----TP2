@@ -1,0 +1,351 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Fonction modélisant la décroissance 
+# Données temporelles
+annees = [1970, 1990, 2000, 2010, 2020, 2024]
+pop_data = [100000, 60000, 40000, 25000, 18000, 15000]
+
+# Calculs de la population selon le modèle exponentiel
+k = 0.02554
+pop_exp = [100000 * exp(-k * (an - 1970)) for an in annees]
+
+# Création des graphes
+points_donnees = list_plot(zip(annees, pop_data), color='red', size=30,
+                           legend_label='Données observées', marker='o')
+points_modele = list_plot(zip(annees, pop_exp), color='blue', size=30,
+                          legend_label='Modèle (valeurs)', marker='x')
+
+# Tracé de la courbe exponentielle continue
+t = var('t')
+modele = 100000 * exp(-k * (t - 1970))
+courbe_modele = plot(modele, (t, 1970, 2025), color='blue',
+                     linestyle='--', legend_label='Modèle (courbe)')
+
+# Affichage combiné
+show(points_donnees + points_modele + courbe_modele,
+     figsize=6,
+     frame=True,
+     axes=True,
+     gridlines=True,
+     axes_labels=['Année', 'Population'],
+     title="Évolution de la population mondiale de requins-baleines (1970–2024)",
+     xmin=1968, xmax=2030)
+
+
+
+# Fonction modélisant la décroissance après utilisation des moindres carrés 
+# Données d'années et populations
+annees = [1970, 1990, 2000, 2010, 2020, 2024]
+pop_obs = [100000, 60000, 40000, 25000, 18000, 15000]
+pop_model = [100000, 52496, 38941, 28873, 21408, 18175]
+
+# Points de données
+points_obs = list_plot(zip(annees, pop_obs), color='red', size=30,
+                       legend_label='Données observées', marker='o')
+points_mod = list_plot(zip(annees, pop_model), color='blue', size=30,
+                       legend_label='Modèle ajusté', marker='x')
+
+# Modèle exponentiel ajusté
+t = var('t')
+modele_exp = 100000 * exp(-0.033 * (t - 1970))
+courbe_exp = plot(modele_exp, (t, 1970, 2025), color='blue',
+                  linestyle='--', legend_label='Courbe exponentielle')
+
+# Affichage du graphique
+show(points_obs + points_mod + courbe_exp,
+     figsize=6, frame=True, axes=True, gridlines=True,
+     axes_labels=['Année', 'Population'],
+     title="Comparaison entre données observées et modèle exponentiel ajusté",
+     xmin=1968, xmax=2030)
+
+
+
+# Comparaison des données observées et du modèle exponentiel ajusté
+# Années étudiées
+annees = [1970, 1990, 2000, 2010, 2020, 2024]
+
+# Données observées
+pop_observee = [100000, 60000, 40000, 25000, 18000, 15000]
+
+# Valeurs modélisées à partir du modèle exponentiel ajusté
+pop_modele = [100000, 52496, 38941, 28873, 21408, 18175]
+
+# Création des points de données
+points_observes = list_plot(zip(annees, pop_observee),
+                            color='red', marker='o', size=30,
+                            legend_label='Données observées')
+
+points_modelises = list_plot(zip(annees, pop_modele),
+                             color='blue', marker='x', size=30,
+                             legend_label='Modèle ajusté')
+
+# Définition de la variable symbolique et de la fonction modèle
+t = var('t')
+fonction_modele = 100000 * exp(-0.033 * (t - 1970))
+
+# Courbe continue du modèle exponentiel
+courbe_modele = plot(fonction_modele, (t, 1970, 2025),
+                     color='blue', linestyle='--',
+                     legend_label='Courbe exponentielle')
+
+# Affichage du graphique combiné
+show(points_observes + points_modelises + courbe_modele,
+     figsize=6,
+     frame=True,
+     axes=True,
+     gridlines=True,
+     axes_labels=['Année', 'Population'],
+     title="Comparaison entre données observées et modèle exponentiel ajusté",
+     xmin=1968,
+     xmax=2030)
+
+
+# Scénario A 
+# Liste des années de projection
+annees_projection = [1970, 1990, 2000, 2010, 2020, 2024, 2030, 2035, 2040]
+
+# Définition de la variable symbolique
+t = var('t')
+
+# Modèle exponentiel ajusté (taux de décroissance de 3,3 % par an)
+fonction_projection = 100000 * exp(-0.033 * (t - 1970))
+
+# Calcul des valeurs projetées pour chaque année
+pop_projection = [fonction_projection(t=annee) for annee in annees_projection]
+
+# Création des points projetés
+points_projection = list_plot(zip(annees_projection, pop_projection),
+                              color='red', marker='o', size=30,
+                              legend_label='Projections (valeurs discrètes)')
+
+# Tracé de la courbe continue
+courbe_projection = plot(fonction_projection, (t, 1970, 2040),
+                         color='blue', linestyle='--',
+                         legend_label='Projection exponentielle')
+
+# Affichage du graphique combiné
+show(points_projection + courbe_projection,
+     figsize=6,
+     frame=True,
+     axes=True,
+     gridlines=True,
+     axes_labels=['Année', 'Population'],
+     title="Scénario A : Poursuite de la décroissance sans intervention (1970–2040)",
+     xmin=1968,
+     xmax=2042)
+
+
+# Comparaison des scénarios A et B 
+# Paramètres de base
+W0 = 100_000      # population initiale
+k = 0.033         # taux décroissance avant intervention (scénario A)
+k_prime = 0.015   # taux décroissance après intervention (scénario B)
+t0 = 1970         # année initiale
+tc = 2025         # année de l'intervention
+
+# Vecteurs de temps
+years = np.arange(1970, 2041)
+
+# Modèle Scénario A : décroissance continue
+W_A = W0 * np.exp(-k * (years - t0))
+
+# Modèle Scénario B : décroissance ralentie à partir de 2025
+W_B = []
+for t in years:
+    if t < tc:
+        W_B.append(W0 * np.exp(-k * (t - t0)))
+    else:
+        W_tc = W0 * np.exp(-k * (tc - t0))
+        W_B.append(W_tc * np.exp(-k_prime * (t - tc)))
+
+# Tracé des courbes
+plt.figure(figsize=(10, 6))
+plt.plot(years, W_A, label="Scénario A : décroissance continue", color="blue", linestyle="--")
+plt.plot(years, W_B, label="Scénario B : réduction du braconnage en 2025", color="green", linewidth=2)
+plt.axvline(x=tc, color="gray", linestyle=":", label="Intervention (2025)")
+
+# Mise en forme
+plt.title("Comparaison des scénarios A et B – Évolution de la population de requins-baleines")
+plt.xlabel("Année")
+plt.ylabel("Population estimée")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# Comparaison entre scénario A et C
+# Paramètres
+W0 = 100_000
+k = 0.033
+k_prime = 0.015
+C = 80_000         # Capacité de charge (scénario C)
+g = 0.03           # Taux de croissance (scénario C)
+t0 = 1970
+tc = 2025
+tz = 2025
+
+# Vecteur de temps
+years = np.arange(1970, 2041)
+
+# Scénario A : décroissance continue
+W_A = W0 * np.exp(-k * (years - t0))
+
+# Scénario B : décroissance ralentie à partir de 2025
+W_B = []
+for t in years:
+    if t < tc:
+        W_B.append(W0 * np.exp(-k * (t - t0)))
+    else:
+        W_tc = W0 * np.exp(-k * (tc - t0))
+        W_B.append(W_tc * np.exp(-k_prime * (t - tc)))
+
+# Scénario C : récupération logistique à partir de 2025
+W_tz = W0 * np.exp(-k * (tz - t0))     # population en 2025
+A = C / W_tz - 1
+W_C = []
+for t in years:
+    if t < tz:
+        W_C.append(W0 * np.exp(-k * (t - t0)))
+    else:
+        W_C.append(C / (1 + A * np.exp(-g * (t - tz))))
+
+# Tracé
+plt.figure(figsize=(10, 6))
+plt.plot(years, W_A, label="Scénario A : décroissance continue", color="blue", linestyle="--")
+plt.plot(years, W_B, label="Scénario B : décroissance ralentie", color="green")
+plt.plot(years, W_C, label="Scénario C : récupération logistique", color="orange", linewidth=2)
+plt.axvline(x=tc, color="gray", linestyle=":", label="Intervention (2025)")
+
+# Mise en forme
+plt.title("Comparaison des scénarios A, B et C – Évolution de la population de requins-baleines")
+plt.xlabel("Année")
+plt.ylabel("Population estimée")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# Comparaison entre les scénarios A et D
+# Paramètres
+W0 = 100_000           # population initiale
+k = 0.033              # taux de décroissance normal
+W_min = 12_000         # seuil critique de viabilité
+k_extinct = 0.15       # taux de décroissance après seuil (rapide mais lissé)
+t0 = 1970              # année de départ
+
+# Vecteur de temps
+years = np.arange(1970, 2041)
+
+# Scénario A : décroissance exponentielle continue
+W_A = W0 * np.exp(-k * (years - t0))
+
+# Scénario D : décroissance exponentielle jusqu'au seuil, puis logistique inversée
+W_D_smooth = []
+smooth_mode = False
+W_t_c = None  # population à l'année du franchissement du seuil
+
+for t in years:
+    W_t = W0 * np.exp(-k * (t - t0))
+    if not smooth_mode:
+        if W_t > W_min:
+            W_D_smooth.append(W_t)
+        else:
+            smooth_mode = True
+            t_c = t
+            W_t_c = W_t
+            W_D_smooth.append(W_t_c)
+    else:
+        # Décroissance logistique inversée après le seuil
+        W = W_min / (1 + np.exp(k_extinct * (t - t_c)))
+        W_D_smooth.append(W)
+
+# Tracé du graphique
+plt.figure(figsize=(10, 6))
+plt.plot(years, W_A, label="Scénario A : décroissance continue", color="blue", linestyle="--")
+plt.plot(years, W_D_smooth, label="Scénario D (lissé) : effondrement accéléré", color="crimson", linewidth=2)
+plt.axvline(x=t_c, color="gray", linestyle=":", label=f"Seuil critique franchi ({t_c})")
+
+plt.title("Scénario A vs D (lissé) – Effondrement avec transition douce")
+plt.xlabel("Année")
+plt.ylabel("Population estimée")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# Graphe comparatif A, B, C et D
+# Paramètres de base
+W0 = 100_000  # population initiale
+k = 0.033     # taux de décroissance initial (scénario A)
+k_prime = 0.015  # taux de décroissance après intervention (scénario B)
+C = 80_000    # capacité maximale de l’écosystème (scénario C)
+g = 0.03      # taux de croissance post-intervention (scénario C)
+W_min = 12_000  # seuil critique (scénario D)
+k_extinct = 0.15  # taux de décroissance rapide (scénario D)
+t0 = 1970
+tc = 2025
+tz = 2025
+
+# Vecteur de temps
+years = np.arange(1970, 2041)
+
+# Scénario A : décroissance continue
+W_A = W0 * np.exp(-k * (years - t0))
+
+# Scénario B : décroissance ralentie à partir de 2025
+W_B = []
+for t in years:
+    if t < tc:
+        W_B.append(W0 * np.exp(-k * (t - t0)))
+    else:
+        W_tc = W0 * np.exp(-k * (tc - t0))
+        W_B.append(W_tc * np.exp(-k_prime * (t - tc)))
+
+# Scénario C : récupération logistique à partir de 2025
+W_tz = W0 * np.exp(-k * (tz - t0))
+A = C / W_tz - 1
+W_C = []
+for t in years:
+    if t < tz:
+        W_C.append(W0 * np.exp(-k * (t - t0)))
+    else:
+        W_C.append(C / (1 + A * np.exp(-g * (t - tz))))
+
+# Scénario D : effondrement accéléré après seuil critique
+W_D = []
+smooth_mode = False
+for t in years:
+    W_t = W0 * np.exp(-k * (t - t0))
+    if not smooth_mode:
+        if W_t > W_min:
+            W_D.append(W_t)
+        else:
+            smooth_mode = True
+            t_c = t
+            W_t_c = W_t
+            W_D.append(W_t_c)
+    else:
+        W = W_min / (1 + np.exp(k_extinct * (t - t_c)))
+        W_D.append(W)
+
+# Tracé des courbes
+plt.figure(figsize=(10, 6))
+plt.plot(years, W_A, label="Scénario A : décroissance continue", linestyle="--", color="blue")
+plt.plot(years, W_B, label="Scénario B : réduction du braconnage", linestyle="-", color="green")
+plt.plot(years, W_C, label="Scénario C : récupération logistique", linestyle="-", color="orange")
+plt.plot(years, W_D, label="Scénario D : effondrement accéléré", linestyle="-", color="crimson")
+plt.axvline(x=tc, color="gray", linestyle=":", label="Intervention / Seuil (2025)")
+
+plt.title("Comparaison des scénarios A, B, C et D – Évolution de la population de requins-baleines")
+plt.xlabel("Année")
+plt.ylabel("Population estimée")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+
+plt.savefig("/mnt/data/comparaison_scenarios_requins_baleines.png")
+plt.show()
